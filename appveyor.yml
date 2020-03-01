@@ -30,14 +30,20 @@ install:
     cd CGAL-4.13
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../ -DBOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0
+  - if "%PLATFORM%" == "x64"
+    cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../ -DBOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0
+  - if "%PLATFORM%" == "x86"
+    cmake -G "Visual Studio 15 2017" ../ -DBOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0
   - msbuild /p:Configuration=Release ALL_BUILD.vcxproj
   - cd %APPVEYOR_BUILD_FOLDER%
 
   - cd thirdparty/instant-meshes
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../
+  - if "%PLATFORM%" == "x64"
+    cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../
+  - if "%PLATFORM%" == "x86"
+    cmake -G "Visual Studio 15 2017" ../
   - msbuild /p:Configuration=RelWithDebInfo ALL_BUILD.vcxproj
   - cd %APPVEYOR_BUILD_FOLDER%
 
