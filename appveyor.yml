@@ -24,19 +24,15 @@ install:
       appveyor DownloadFile https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.13/CGAL-4.13-Setup.exe -FileName CGAL-4.13-Setup.exe
   - if "%PLATFORM%" == "x64"
     cd thirdparty/cgal/CGAL-4.13
-    mkdir build
-    cd build
-    cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../ -DBOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0
-    msbuild /p:Configuration=Release ALL_BUILD.vcxproj
-    cd %APPVEYOR_BUILD_FOLDER%
   - if "%PLATFORM%" == "x86"
     CGAL-4.13-Setup.exe /S /D=%APPVEYOR_BUILD_FOLDER%\CGAL-4.13
+  - if "%PLATFORM%" == "x86"
     cd CGAL-4.13
-    mkdir build
-    cd build
-    cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../ -DBOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0
-    msbuild /p:Configuration=Release ALL_BUILD.vcxproj
-    cd %APPVEYOR_BUILD_FOLDER%
+  - mkdir build
+  - cd build
+  - cmake -G "Visual Studio 15 2017" -A %PLATFORM% ../ -DBOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0
+  - msbuild /p:Configuration=Release ALL_BUILD.vcxproj
+  - cd %APPVEYOR_BUILD_FOLDER%
 
   - cd thirdparty/instant-meshes
   - mkdir build
@@ -49,7 +45,10 @@ build: false
 
 test_script:
   - set PATH=%PATH%;%QTDIR%\bin
-  - qmake "BOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0" "CGAL_DIR=%APPVEYOR_BUILD_FOLDER%\thirdparty\cgal\CGAL-4.13"
+  - if "%PLATFORM%" == "x64"
+    qmake "BOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0" "CGAL_DIR=%APPVEYOR_BUILD_FOLDER%\thirdparty\cgal\CGAL-4.13"
+  - if "%PLATFORM%" == "x86"
+    qmake "BOOST_INCLUDEDIR=C:\Libraries\boost_1_66_0" "CGAL_DIR=%APPVEYOR_BUILD_FOLDER%\CGAL-4.13"
   - nmake -f Makefile.Release
 
 after_test:
@@ -62,7 +61,7 @@ after_test:
   - if "%TAG%" == ""
     set TAG=unstable
   - if "%PLATFORM%" == "x64"
-    set RELEASE_FILENAME=%RELEASE_FILENAME%
+    set RELEASE_FILENAME=dust3d-%TAG%.zip
   - if "%PLATFORM%" == "x86"
     set RELEASE_FILENAME=dust3d-%TAG%-x86.zip
   - if "%TAG%" == "unstable"
@@ -113,6 +112,9 @@ after_test:
   - dust3d.exe :/resources/model-dog.ds3 -o dog.obj
   - dust3d.exe :/resources/model-dog.ds3 -o dog.fbx
   - dust3d.exe :/resources/model-dog.ds3 -o dog.glb
+  - dust3d.exe :/resources/model-cat.ds3 -o cat.obj
+  - dust3d.exe :/resources/model-cat.ds3 -o cat.fbx
+  - dust3d.exe :/resources/model-cat.ds3 -o cat.glb
   - dust3d.exe :/resources/model-meerkat.ds3 -o meerkat.obj
   - dust3d.exe :/resources/model-meerkat.ds3 -o meerkat.fbx
   - dust3d.exe :/resources/model-meerkat.ds3 -o meerkat.glb
